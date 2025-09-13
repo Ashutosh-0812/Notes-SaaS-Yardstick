@@ -65,7 +65,7 @@ export default function Notes() {
   }
 
   const deleteNote = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this note?')) return
+
     
     try {
       await axios.delete(`http://localhost:5000/api/notes/${id}`, {

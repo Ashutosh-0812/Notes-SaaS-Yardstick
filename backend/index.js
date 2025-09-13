@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 // Import models
@@ -17,12 +18,12 @@ const app = express();
 
 // Middleware - CORS with proper configuration
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/tenants', tenantsRoutes);
@@ -31,6 +32,18 @@ app.use('/api/health', healthRoutes);
 // Health endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Serve static frontend
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
+
+// ⚡ Important: Only fallback to index.html for routes that are NOT API and NOT asset files
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next(); // let API routes work
+  }
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // MongoDB connection
@@ -48,7 +61,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// 404 handler
+// 404 handler (only if not caught above)
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
