@@ -14,10 +14,12 @@ export default function PlanToggl() {
     
     try {
       const endpoint = user.tenant.plan === 'free' ? 'upgrade' : 'downgrade';
-      const response = await fetch(`http://localhost:5000/api/tenants/${user.tenant.slug}/${endpoint}`, {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`/api/tenants/${user.tenant.slug}/${endpoint}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

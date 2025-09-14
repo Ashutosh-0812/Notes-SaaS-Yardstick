@@ -5,6 +5,14 @@ import NoteForm from './NoteForm'
 import PlanToggl from './PlanToggl'
 import Layout from './Layout'
 
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+
 export default function Notes() {
   const [notes, setNotes] = useState([])
   const [showForm, setShowForm] = useState(false)
@@ -19,9 +27,10 @@ export default function Notes() {
 
   const fetchNotes = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/notes', {
+      const token = localStorage.getItem('token')
+      const response = await api.get('/notes', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         }
       })
       setNotes(response.data)
@@ -32,9 +41,10 @@ export default function Notes() {
 
   const createNote = async (noteData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/notes', noteData, {
+      const token = localStorage.getItem('token')
+      const response = await api.post('/notes', noteData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         }
       })
       setNotes([response.data, ...notes])
@@ -51,9 +61,10 @@ export default function Notes() {
 
   const updateNote = async (id, noteData) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/notes/${id}`, noteData, {
+      const token = localStorage.getItem('token')
+      const response = await api.put(`/notes/${id}`, noteData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         }
       })
       setNotes(notes.map(note => note._id === id ? response.data : note))
@@ -65,12 +76,11 @@ export default function Notes() {
   }
 
   const deleteNote = async (id) => {
-
-    
     try {
-      await axios.delete(`http://localhost:5000/api/notes/${id}`, {
+      const token = localStorage.getItem('token')
+      await api.delete(`/notes/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         }
       })
       setNotes(notes.filter(note => note._id !== id))
