@@ -4,6 +4,10 @@
     {
       "src": "backend/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "backend/public/**/*",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -13,7 +17,10 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/backend/index.js"
+      "dest": "/backend/public/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
